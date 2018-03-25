@@ -5,8 +5,8 @@ import schema from './data/schema';
 import compression from 'compression';
 // import { Engine } from 'apollo-engine';
 import { ApolloEngine } from 'apollo-engine';
-
-const GRAPHQL_PORT = 3000;
+// Heroku 会动态分配端口（通过环境变量 PORT 指定）
+const GRAPHQL_PORT = process.env.PORT || 3000;
 const ENGINE_API_KEY = 'service:luminqi:t-YMuoOMxrj2It0G8ciJCw';
 
 const graphQLServer = express();
