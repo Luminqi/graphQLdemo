@@ -1,4 +1,4 @@
-import { Author, View, FortuneCookie } from './connectors';
+import { Author, View, FortuneCookie, Dota2 } from './connectors';
 
 const resolvers = {
   Query: {
@@ -10,6 +10,9 @@ const resolvers = {
     },
     getFortuneCookie() {
       return FortuneCookie.getOne();
+    },
+    allHeros() {
+      return Dota2.getHeros();
     }
   },
   Author: {

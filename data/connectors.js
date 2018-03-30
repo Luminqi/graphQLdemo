@@ -14,6 +14,13 @@ const FortuneCookie = {
       });
   },
 };
+// Dota2API
+const Dota2 = {
+  getHeros() {
+    return fetch('https://api.opendota.com/api/heroes')
+    .then(res => res.json())
+  }
+}
 
 // mongo
 Mongoose.Promise = global.Promise;
@@ -71,4 +78,4 @@ db.sync({ force: true }).then(() => {
 const Author = db.models.author;
 const Post = db.models.post;
 
-export { Author, Post, View, FortuneCookie };
+export { Author, Post, View, FortuneCookie, Dota2 };

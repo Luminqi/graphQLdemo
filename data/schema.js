@@ -7,6 +7,7 @@ type Query {
   author(firstName: String, lastName: String): Author
   allAuthors: [Author]
   getFortuneCookie: String @cacheControl(maxAge: 5)
+  allHeros: [Hero]
 }
 type Author {
   id: Int
@@ -20,6 +21,17 @@ type Post {
   text: String
   views: Int
   author: Author
+}
+type Hero {
+  id: String!
+  name: String!
+  localized_name: String!
+  primary_attr: String!
+  attack_type: String!
+  roles: [String!]!
+}
+schema {
+  query: Query
 }
 `;
 
