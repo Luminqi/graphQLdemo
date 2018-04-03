@@ -1,11 +1,11 @@
-import Sequelize from 'sequelize';
-import casual from 'casual';
-import _ from 'lodash';
-import Mongoose from 'mongoose';
+// import Sequelize from 'sequelize';
+// import casual from 'casual';
+// import _ from 'lodash';
+// import Mongoose from 'mongoose';
 import fetch from 'node-fetch';
 
 // RESTful
-const FortuneCookie = {
+/* const FortuneCookie = {
   getOne() {
     return fetch('http://fortunecookieapi.herokuapp.com/v1/cookie')
       .then(res => res.json())
@@ -13,8 +13,8 @@ const FortuneCookie = {
         return res[0].fortune.message;
       });
   },
-};
-// Dota2API
+}; */
+//Dota2API
 const Dota2 = {
   getHeros() {
     return fetch('https://api.opendota.com/api/heroes')
@@ -23,19 +23,19 @@ const Dota2 = {
 }
 
 // mongo
-Mongoose.Promise = global.Promise;
+/* Mongoose.Promise = global.Promise;
 
 const mongo = Mongoose.connect('mongodb://luminqi:Luminqi670903@ds229438.mlab.com:29438/grapgql', {
   useMongoClient: true
 });
-const ViewSchema = Mongoose.Schema({
-  postId: Number,
-  views: Number,
+const UserSchema = Mongoose.Schema({
+  _id: String,
+  email: String,
 });
-const View = Mongoose.model('views', ViewSchema);
+const Users = Mongoose.model('Users', UserSchema); */
 
 // sqlite
-const db = new Sequelize('blog', null, null, {
+/* const db = new Sequelize('blog', null, null, {
   dialect: 'sqlite',
   storage: './blog.sqlite',
 });
@@ -51,10 +51,10 @@ const PostModel = db.define('post', {
 });
 
 AuthorModel.hasMany(PostModel);
-PostModel.belongsTo(AuthorModel);
+PostModel.belongsTo(AuthorModel); */
 
 // create mock data with a seed, so we always get the same
-casual.seed(123);
+/* casual.seed(123);
 db.sync({ force: true }).then(() => {
   _.times(10, () => {
     return AuthorModel.create({
@@ -76,6 +76,6 @@ db.sync({ force: true }).then(() => {
 });
 
 const Author = db.models.author;
-const Post = db.models.post;
+const Post = db.models.post; */
 
-export { Author, Post, View, FortuneCookie, Dota2 };
+export { Dota2 };
