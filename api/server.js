@@ -1,61 +1,31 @@
 import express from 'express';
+import cors from 'cors';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import bodyParser from 'body-parser';
 import schema from './schema';
 import compression from 'compression';
 import { ApolloEngine } from 'apollo-engine';
-import { JWT_SECRET } from './config';
-import { Users } from './mongoDB/connectors';
-
+import { Dota2Connector } from './dota2/connectors';
+import { Heroes } from './dota2/models';
 // Heroku 会动态分配端口（通过环境变量 PORT 指定）
-const GRAPHQL_PORT = process.env.PORT || 3000;
+const GRAPHQL_PORT = process.env.PORT || 3001;
 const ENGINE_API_KEY = 'service:luminqi:t-YMuoOMxrj2It0G8ciJCw';
 
-const getUser = async (authorization) => {
-  const bearerLength = "Bearer ".length;
-  if (authorization && authorization.length > bearerLength) {
-    const token = authorization.slice(bearerLength);
-    const { ok, result } = await new Promise(resolve =>
-      jwt.verify(token, secrets.JWT_SECRET, (err, result) => {
-        if (err) {
-          resolve({
-            ok: false,
-            result: err
-          });
-        } else {
-          resolve({
-            ok: true,
-            result
-          });
-        }
-      })
-    );
-    
-    if (ok) {
-      const user = await Users.findById({ _id: result._id });
-      return user;
-    } else {
-      console.error(result);
-      return null;
-    }
-  }
-
-  return null;
-};
-
 const graphQLServer = express();
-
+// enable CORS
+graphQLServer.use(cors());
 graphQLServer.use(compression());
 graphQLServer.use('/graphql',
   bodyParser.json(),
-  graphqlExpress(async (req) => {
-    const user = await getUser(req.headers.authorization);
+  graphqlExpress((req) => {
+    const authToken = req.headers.authorization;
     return {
       schema,
       tracing: true,
       cacheControl: true,
       context: {
-        user
+        authToken,
+        Heroes: new Heroes({ connector: new Dota2Connector })
       }
     };
   })
@@ -71,6 +41,11 @@ graphQLServer.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 // engine.start();
 const engine = new ApolloEngine({
   apiKey: ENGINE_API_KEY,
+  frontends: [{
+    overrideGraphqlResponseHeaders: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  }]
 });
 engine.listen({
   port: GRAPHQL_PORT,

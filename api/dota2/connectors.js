@@ -1,81 +1,29 @@
-// import Sequelize from 'sequelize';
-// import casual from 'casual';
-// import _ from 'lodash';
-// import Mongoose from 'mongoose';
 import fetch from 'node-fetch';
+import DataLoader from 'dataloader';
 
-// RESTful
-/* const FortuneCookie = {
-  getOne() {
-    return fetch('http://fortunecookieapi.herokuapp.com/v1/cookie')
-      .then(res => res.json())
-      .then(res => {
-        return res[0].fortune.message;
-      });
-  },
-}; */
-//Dota2API
-const Dota2 = {
-  getHeros() {
-    return fetch('https://api.opendota.com/api/heroes')
-    .then(res => res.json())
-  }
-}
+const DOTA2_API_ROOT = 'https://api.opendota.com/api'
 
-// mongo
-/* Mongoose.Promise = global.Promise;
+// const Dota2 = {
+//   getHeroes () {
+//     return fetch('https://api.opendota.com/api/heroes')
+//     .then(res => res.json());
+//   }
+// }
 
-const mongo = Mongoose.connect('mongodb://luminqi:Luminqi670903@ds229438.mlab.com:29438/grapgql', {
-  useMongoClient: true
-});
-const UserSchema = Mongoose.Schema({
-  _id: String,
-  email: String,
-});
-const Users = Mongoose.model('Users', UserSchema); */
-
-// sqlite
-/* const db = new Sequelize('blog', null, null, {
-  dialect: 'sqlite',
-  storage: './blog.sqlite',
-});
-
-const AuthorModel = db.define('author', {
-  firstName: { type: Sequelize.STRING },
-  lastName: { type: Sequelize.STRING },
-});
-
-const PostModel = db.define('post', {
-  title: { type: Sequelize.STRING },
-  text: { type: Sequelize.STRING },
-});
-
-AuthorModel.hasMany(PostModel);
-PostModel.belongsTo(AuthorModel); */
-
-// create mock data with a seed, so we always get the same
-/* casual.seed(123);
-db.sync({ force: true }).then(() => {
-  _.times(10, () => {
-    return AuthorModel.create({
-      firstName: casual.first_name,
-      lastName: casual.last_name,
-    }).then((author) => {
-      return author.createPost({
-        title: `A post by ${author.firstName}`,
-        text: casual.sentences(3),
-      }).then((post) => { // <- the new part starts here
-        // create some View mocks
-        return View.update(
-          { postId: post.id },
-          { views: casual.integer(0, 100) },
-          { upsert: true });
-      });
+export class Dota2Connector {
+  constructor () {
+    this.loader = new DataLoader(this.fetch.bind(this), {
+      batch: false
     });
-  });
-});
-
-const Author = db.models.author;
-const Post = db.models.post; */
-
-export { Dota2 };
+  }
+  fetch (urls) {
+    return Promise.all(urls.map((url) => fetch(url).then(res => res.json())));
+  }
+  get (path) {
+    return this.loader.load(DOTA2_API_ROOT + path);
+  }
+  // get (path) {
+  //   return fetch(DOTA2_API_ROOT + path).then(res => res.json());
+  // }
+}
+// export { Dota2 };

@@ -6,7 +6,7 @@ const typeDefs = `
     currentUser: User
   }
   type User {
-    _id: String
+    _id: ID
     email: String
     jwt: String
   }

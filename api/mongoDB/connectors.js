@@ -9,7 +9,8 @@ const mongo = Mongoose.connect('mongodb://luminqi:Luminqi670903@ds229438.mlab.co
 // models
 const UserSchema = Mongoose.Schema({
   email: String,
-  password: String
+  password: String,
+  roles: [String]
 });
 const Users = Mongoose.model('Users', UserSchema);
 

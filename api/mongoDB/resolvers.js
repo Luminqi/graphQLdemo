@@ -24,6 +24,7 @@ const resolvers = {
        return user;
     },
     signup: async (root, { email, password }) => {
+      console.log('from signup')
       const existingUser = await Users.findOne({ email });
       if (existingUser) {
         throw new Error('Email already used');
@@ -31,7 +32,8 @@ const resolvers = {
       const hash = await bcrypt.hash(password, 10);
       await Users.create({
         email,
-        password: hash
+        password: hash,
+        roles: ['USER', 'ADMIN']
       });
       const user = await Users.findOne({ email });
       user.jwt = jwt.sign({ _id: user._id }, JWT_SECRET);
