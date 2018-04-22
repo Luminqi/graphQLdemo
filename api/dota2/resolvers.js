@@ -1,6 +1,18 @@
-import { Dota2 } from './connectors';
+//custom scalar
+import { PaginationAmountScalar } from '../customScalars/paginationAmount';
+import { MatchesAmountScalar } from '../customScalars/matchesAmount';
+import { DateScalar } from '../customScalars/date';
+import { HeroIdScalar } from '../customScalars/heroId';
+import { resolvers as heroResolvers } from './schema/hero';
+import { resolvers as playerResolvers } from './schema/player';
+import { merge } from 'lodash';
 
-const resolvers = {
+const rootResolvers = {
+  //custom scalar
+  PaginationAmount: PaginationAmountScalar,
+  MatchesAmount: MatchesAmountScalar,
+  CustomDate: DateScalar,
+  HeroId: HeroIdScalar,
   Query: {
     allHeroes (_, args, context) {
       return context.Heroes.getAll();
@@ -10,13 +22,11 @@ const resolvers = {
     },
     allStats (_, args, context) {
       return context.Heroes.getStats();
-    }
-  },
-  Hero: {
-    stats ({ id }, args, context) {
-      return context.Heroes.getStatsById(id);
+    },
+    player (_, { account_id }, context) {
+      return context.Players.getData(account_id);
     }
   }
 };
 
-export default resolvers;
+export const resolvers = merge(rootResolvers, heroResolvers, playerResolvers);

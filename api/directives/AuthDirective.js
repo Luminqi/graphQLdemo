@@ -1,8 +1,5 @@
 import { SchemaDirectiveVisitor } from "graphql-tools";
 import { defaultFieldResolver } from "graphql";
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config';
-import { Users } from '../mongoDB/connectors';
 
 export class AuthDirective extends SchemaDirectiveVisitor {
   visitObject(type) {
@@ -35,51 +32,27 @@ export class AuthDirective extends SchemaDirectiveVisitor {
         const requiredRole =
           field._requiredAuthRole ||
           objectType._requiredAuthRole;
-        console.log(requiredRole);
+        console.log('requiredRole'+ requiredRole);
         if (! requiredRole) {
           return resolve.apply(this, args);
         }
 
         const context = args[2];
-        const user = await getUser(context.authToken);
-        if (user && user.roles && user.roles.includes(requiredRole)) {
+        const user = await context.Users.authUserByToken(context.authToken);
+        const { state } = user;
+        console.log('after getUser: '+ state);
+        if (state === 'pass' && user.roles && user.roles.includes(requiredRole)) {
           return resolve.apply(this, args);
         }
-
-        throw new Error("not authorized");
+        if (state === 'refresh') {
+          const { _id, email } = user;
+          context.Users.refreshJWT(_id, email);
+          return resolve.apply(this, args);
+        }
+        // need more accurate error
+        const error = user.state === 'fail' ? `${user.name},${user.message}` : 'not authorized';
+        throw new Error(error);
       };
     });
   }
 }
-
-const getUser = async (authorization) => {
-  console.log('from auth');
-  const bearerLength = "Bearer ".length;
-  if (authorization && authorization.length > bearerLength) {
-    const token = authorization.slice(bearerLength);
-    console.log(token);
-    const { ok, result } = await new Promise(resolve =>
-      jwt.verify(token, JWT_SECRET, (err, result) => {
-        if (err) {
-          resolve({
-            ok: false,
-            result: err
-          });
-        } else {
-          resolve({
-            ok: true,
-            result
-          });
-        }
-      })
-    );
-    if (ok) {
-      const user = await Users.findById({ _id: result._id });
-      return user;
-    } else {
-      console.error(result);
-      return null;
-    }
-  }
-  return null;
-};

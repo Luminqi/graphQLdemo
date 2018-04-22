@@ -1,43 +1,37 @@
-import { Users } from './connectors';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config';
+import { withFilter } from 'graphql-subscriptions';
+import { pubsub }  from '../pubsub';
 
 const resolvers = {
   Query: {
     currentUser(root, args, context) {
-      return context.user;
+      return context.Users.currentUser(context.authToken);
     }
   },
   Mutation: {
-    login: async (root, { email, password }) => {
-       const user = await Users.findOne({ email });
-       if (!user) {
-         throw new Error('Email not found');
-       }
-       const validPassword = await bcrypt.compare(password, user.password);
-       if (!validPassword) {
-        throw new Error('Password is incorrect');
-       }
-       // Generate the jwt and add it to the user document being returned.
-       user.jwt = jwt.sign({ _id: user._id }, JWT_SECRET);
-       return user;
+    login (root, { email, password }, context) {
+      return context.Users.login(email, password);
     },
-    signup: async (root, { email, password }) => {
-      console.log('from signup')
-      const existingUser = await Users.findOne({ email });
-      if (existingUser) {
-        throw new Error('Email already used');
-      }
-      const hash = await bcrypt.hash(password, 10);
-      await Users.create({
-        email,
-        password: hash,
-        roles: ['USER', 'ADMIN']
-      });
-      const user = await Users.findOne({ email });
-      user.jwt = jwt.sign({ _id: user._id }, JWT_SECRET);
-      return user;
+    signup (root, { email, password }, context) {
+      return context.Users.signup(email, password);
+    }
+  },
+  Subscription: {
+    updateJWT: {
+      // run before graphql execution, the payload is which published by pubsub
+      // resolve: (payload, args, context, info) => {
+      //   // Manipulate and return the new value
+      //   console.log('from resolve: ')
+      //   console.log(payload);
+      //   return { ...payload };
+      // },
+      // filter the update event with the email
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('updateJWT'),
+        (payload, variables) => {
+          console.log('from filter' + payload.updateJWT.email + '===' + variables.email);
+          return payload.updateJWT.email === variables.email;
+        } 
+      )
     }
   }
 };

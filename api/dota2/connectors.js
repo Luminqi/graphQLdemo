@@ -1,14 +1,7 @@
 import fetch from 'node-fetch';
 import DataLoader from 'dataloader';
 
-const DOTA2_API_ROOT = 'https://api.opendota.com/api'
-
-// const Dota2 = {
-//   getHeroes () {
-//     return fetch('https://api.opendota.com/api/heroes')
-//     .then(res => res.json());
-//   }
-// }
+const DOTA2_API_ROOT = 'https://api.opendota.com/api';
 
 export class Dota2Connector {
   constructor () {
@@ -25,5 +18,4 @@ export class Dota2Connector {
   // get (path) {
   //   return fetch(DOTA2_API_ROOT + path).then(res => res.json());
   // }
-}
-// export { Dota2 };
+};
