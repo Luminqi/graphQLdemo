@@ -36,7 +36,7 @@ export class UsersModel {
     const jwtid = JWTManager.getjwtid();
     await Users.findOneAndUpdate({ _id }, { jwtid });
     const newJWT = JWTManager.sign({ _id }, jwtid);
-    // pass the newJWT to client (subscription ?)
+    // pass the newJWT to client (subscription)
     console.log('before update');
     pubsub.publish('updateJWT', { updateJWT: { newJWT, email } });
     console.log('after update');

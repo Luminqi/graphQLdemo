@@ -3,6 +3,7 @@ import { resolvers } from './resolvers';
 import { AuthDirective } from '../directives/AuthDirective';
 import { typeDefs as Hero } from './schema/hero';
 import { typeDefs as Player } from './schema/player';
+import { typeDefs as ProData } from './schema/proData';
 
 const rootSchema = `
   enum Role {
@@ -26,6 +27,7 @@ const rootSchema = `
     hero(id: HeroId!): Hero
     allStats: [Stats] @cacheControl(maxAge: 120)
     player(account_id: Int!): Player
+    proData: ProData 
   }
   
   schema {
@@ -34,7 +36,7 @@ const rootSchema = `
 `;
 
 const schema = makeExecutableSchema({
-  typeDefs: [rootSchema, Hero, Player],
+  typeDefs: [rootSchema, Hero, Player, ProData],
   resolvers,
   schemaDirectives: {
     auth: AuthDirective

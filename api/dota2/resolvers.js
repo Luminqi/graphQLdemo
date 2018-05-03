@@ -5,6 +5,7 @@ import { DateScalar } from '../customScalars/date';
 import { HeroIdScalar } from '../customScalars/heroId';
 import { resolvers as heroResolvers } from './schema/hero';
 import { resolvers as playerResolvers } from './schema/player';
+import { resolvers as proDataResolvers } from './schema/proData';
 import { merge } from 'lodash';
 
 const rootResolvers = {
@@ -25,8 +26,11 @@ const rootResolvers = {
     },
     player (_, { account_id }, context) {
       return context.Players.getData(account_id);
+    },
+    proData (_, args, ctx, info) {
+      return {};
     }
   }
 };
 
-export const resolvers = merge(rootResolvers, heroResolvers, playerResolvers);
+export const resolvers = merge(rootResolvers, heroResolvers, playerResolvers, proDataResolvers);
