@@ -252,3 +252,13 @@ export class ProData {
     return players;
   }
 }
+
+export class Match {
+  constructor({ connector }) {
+    this.connector = connector;
+  }
+  async getDetail (match_id) {
+    let detail = await this.connector.get(`/matches/${match_id}`);
+    return detail;
+  }
+}

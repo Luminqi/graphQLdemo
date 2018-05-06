@@ -6,7 +6,7 @@ import schema from './schema';
 import compression from 'compression';
 import { ApolloEngine } from 'apollo-engine';
 import { Dota2Connector } from './dota2/connectors';
-import { Heroes, Players, ProData } from './dota2/models';
+import { Heroes, Players, ProData, Match } from './dota2/models';
 import { UsersModel as Users } from './mongoDB/models';
 import { ENGINE_API_KEY } from './config'
 // Subscription
@@ -39,7 +39,8 @@ graphQLServer.use('/graphql',
         Users: new Users(),
         Heroes: new Heroes({ connector: new Dota2Connector }),
         Players: new Players({ connector: new Dota2Connector }),
-        ProData: new ProData({ connector: new Dota2Connector })
+        ProData: new ProData({ connector: new Dota2Connector }),
+        Match: new Match({ connector: new Dota2Connector })
       }
     };
   })

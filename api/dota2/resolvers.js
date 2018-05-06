@@ -29,6 +29,9 @@ const rootResolvers = {
     },
     proData (_, args, ctx, info) {
       return {};
+    },
+    match (_, { match_id }, context) {
+      return context.Match.getDetail(match_id);
     }
   }
 };
